@@ -134,6 +134,9 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">asm_acceleration.obj</Outputs>
     </CustomBuild>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="c_acceleration.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
