@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include "c_acceleration.c"
 
 extern int asm_acceleration(double vi, double vf, double t);
 
