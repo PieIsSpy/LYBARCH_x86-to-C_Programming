@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "c_acceleration.h"
+#include "asm_acceleration.asm"
 
 extern int asm_acceleration(double vi, double vf, double t);
 
@@ -13,14 +13,14 @@ struct givens {
 int main() {
 	int n = 0;
 
-	scanf("%d", &n);
+	scanf_s("%d", &n);
 
 	givens* vectors = (givens*)malloc(n * sizeof(givens));
 
 	for (int i = 0; i < n; i++) {
-		scanf("%lf", &vectors[i].vi);
-		scanf("%lf", &vectors[i].vf);
-		scanf("%lf", &vectors[i].t);
+		scanf_s("%lf", &vectors[i].vi);
+		scanf_s("%lf", &vectors[i].vf);
+		scanf_s("%lf", &vectors[i].t);
 	}
 
 	for (int i = 0; i < n; i++) {
