@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "asm_acceleration.asm"
+
 
 extern int asm_acceleration(double vi, double vf, double t);
 
@@ -24,7 +24,7 @@ int main() {
 	}
 
 	for (int i = 0; i < n; i++) {
-		printf("%d\n", c_acceleration(vectors[i].vi, vectors[i].vf, vectors[i].t));
+		printf("%d\n", asm_acceleration(vectors[i].vi, vectors[i].vf, vectors[i].t));
 	}
 	
 	free(vectors);
