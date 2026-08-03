@@ -13,14 +13,14 @@ struct givens {
 int main() {
 	int n = 0;
 
-	scanf_s("%d", &n);
+	scanf("%d", &n);
 
 	givens* vectors = (givens*)malloc(n * sizeof(givens));
 
 	for (int i = 0; i < n; i++) {
-		scanf_s("%lf", &vectors[i].vi);
-		scanf_s("%lf", &vectors[i].vf);
-		scanf_s("%lf", &vectors[i].t);
+		scanf("%lf", &vectors[i].vi);
+		scanf("%lf", &vectors[i].vf);
+		scanf("%lf", &vectors[i].t);
 	}
 
 	for (int i = 0; i < n; i++) {
