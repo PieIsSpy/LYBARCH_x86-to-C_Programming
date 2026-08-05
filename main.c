@@ -24,7 +24,7 @@ struct run_summary {
 	double c_avg;
 	double asm_avg;
 	int corrects;
-};
+} typedef run_summary;
 
 iteration_res solve_iteration(givens g) {
 	clock_t t;
@@ -43,14 +43,37 @@ iteration_res solve_iteration(givens g) {
 	return i;
 }
 
-double silent_run(int y, givens* g) {
-	int x;
-	iteration_res* results = (iteration_res*)malloc(y * sizeof(iteration_res));
+run_summary summarize_run(int y, iteration_res* results) {
+	run_summary r;
+	r.asm_avg = 0;
+	r.c_avg = 0;
+	r.corrects = 0;
 
 	for (int i = 0; i < y; i++) {
-		x = i;
+		r.asm_avg += results[i].asm_time;
+		r.c_avg += results[i].c_time;
+		
+		if (results[i].asm_ans == results[i].c_ans) {
+			r.corrects++;
+		}
 	}
-	return x;
+
+	r.asm_avg /= y;
+	r.c_avg /= y;
+
+	return r;
+}
+
+run_summary silent_run(int y, givens* g) {
+	iteration_res* results = (iteration_res*)malloc(y * sizeof(iteration_res));
+
+	if (results) {
+		for (int i = 0; i < y; i++) {
+			results[i] = solve_iteration(g[i]);
+		}
+	}
+
+	return summarize_run(y, results);
 }
 
 void verbose_run(int y) {
@@ -83,15 +106,16 @@ int main() {
 
 	// initialize inputs
 	givens* vectors = initialize_vectors(y);
-	iteration_res* results = (iteration_res*)malloc(y * sizeof(iteration_res));
+	run_summary* results = (run_summary*)malloc(30 * sizeof(run_summary));
 
-	for (int i = 1; i <= 30; i++) {
-		if (i == 30) {
-			/*printf("displaying run 30:\n");
-			verbose_run(y);*/
+	for (int i = 0; i < 30; i++) {
+		if (i == 29) {
+			printf("Run 30 done\n");
 		}
 		else {
-			//printf("run %d result: %d\n", i, silent_run(y));
+			printf("Run %d\n", i + 1);
+			results[i] = silent_run(y, vectors);
+			printf("Asm_avg: %lf, C_avg: %lf, Corrects: %d\n", results[i].asm_avg, results[i].c_avg, results[i].corrects);
 		}
 	}
 
