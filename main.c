@@ -27,18 +27,18 @@ struct run_summary {
 } typedef run_summary;
 
 iteration_res solve_iteration(givens g) {
-	clock_t t;
+	clock_t start, end;
 	iteration_res i;
 
-	t = clock();
+	start = clock();
 	i.asm_ans = asm_acceleration(g.vi, g.vf, g.t);
-	t = clock() - t;
-	i.asm_time = t;
+	end = clock();
+	i.asm_time = ((double)(end - start) / CLOCKS_PER_SEC) * 1000.0;
 
-	t = clock();
+	start = clock();
 	i.c_ans = c_acceleration(g.vi, g.vf, g.t);
-	t = clock() - t;
-	i.c_time = t;
+	end = clock();
+	i.c_time = ((double)(end - start) / CLOCKS_PER_SEC) * 1000.0;
 
 	return i;
 }
