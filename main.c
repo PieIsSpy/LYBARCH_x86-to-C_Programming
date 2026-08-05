@@ -33,12 +33,12 @@ iteration_res solve_iteration(givens g) {
 	start = clock();
 	i.asm_ans = asm_acceleration(g.vi, g.vf, g.t);
 	end = clock();
-	i.asm_time = ((double)(end - start) / CLOCKS_PER_SEC) * 1000.0;
+	i.asm_time = ((double)(end - start) / CLOCKS_PER_SEC) * 1000000.0;
 
 	start = clock();
 	i.c_ans = c_acceleration(g.vi, g.vf, g.t);
 	end = clock();
-	i.c_time = ((double)(end - start) / CLOCKS_PER_SEC) * 1000.0;
+	i.c_time = ((double)(end - start) / CLOCKS_PER_SEC) * 1000000.0;
 
 	return i;
 }
@@ -73,14 +73,37 @@ run_summary silent_run(int y, givens* g) {
 		}
 	}
 
-	return summarize_run(y, results);
+	run_summary summary =  summarize_run(y, results);
+	free(results);
+	return summary;
 }
 
-void verbose_run(int y) {
-	printf("| i |    vi    |    vf     |     t     | C Ans |  C Time  | Asm Ans | Asm Time | Correctness |\n");
+run_summary verbose_run(int y, givens* g) {
+	iteration_res* results = (iteration_res*)malloc(y * sizeof(iteration_res));
+
+	printf("Head of Iteration (Max 10)\n");
+	printf("%5s %5s %5s %5s %10s %10s %10s %10s %10s\n", "i", "vi", "vf", "t", "C_ans", "C_time", "Asm_ans", "Asm_time", "Check");
+
 	for (int i = 0; i < y; i++) {
-		printf("%d\n", i + 1);
+		results[i] = solve_iteration(g[i]);
+
+		if (i < 10) {
+			printf("%5d %5.1f %5.1f %5.1f %10d %10.2f %10d %10.2f %10s\n",
+				i + 1,
+				g[i].vi,
+				g[i].vf,
+				g[i].t,
+				results[i].c_ans,
+				results[i].c_time,
+				results[i].asm_ans,
+				results[i].asm_time,
+				(results[i].c_ans == results[i].asm_ans) ? "PASS" : "FAIL");
+		}
 	}
+
+	run_summary summary = summarize_run(y, results);
+	free(results);
+	return summary;
 }
 
 givens* initialize_vectors(int y) {
@@ -109,11 +132,11 @@ int main() {
 	run_summary* results = (run_summary*)malloc(30 * sizeof(run_summary));
 
 	for (int i = 0; i < 30; i++) {
+		printf("Run %d\n", i + 1);
 		if (i == 29) {
-			printf("Run 30 done\n");
+			results[i] = verbose_run(y, vectors);
 		}
 		else {
-			printf("Run %d\n", i + 1);
 			results[i] = silent_run(y, vectors);
 			printf("Asm_avg: %lf, C_avg: %lf, Corrects: %d\n", results[i].asm_avg, results[i].c_avg, results[i].corrects);
 		}
