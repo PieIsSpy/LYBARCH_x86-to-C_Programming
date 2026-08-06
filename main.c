@@ -70,6 +70,15 @@ givens* initialize_vectors(int y) {
 	return vectors;
 }
 
+void display_summary(int i, run_summary summary) {
+	printf("Run %d:\n", i + 1);
+	printf("C time: %lf ms\n", summary.c_time);
+	printf("Asm time: %lf ms\n", summary.asm_time);
+	printf("Time difference (C to Asm): %lf ms\n", summary.c_time - summary.asm_time);
+	printf("Corrects: %d\n", summary.corrects);
+	printf("\n");
+}
+
 int main() {
 	int y;
 	srand(time(NULL));
@@ -82,7 +91,7 @@ int main() {
 
 	for (int i = 0; i < 30; i++) {
 		run_summary summary = silent_run(y, vectors);
-		printf("%lf %lf %d\n", summary.asm_time, summary.c_time, summary.corrects);
+		display_summary(i, summary);
 	}
 
 	free(vectors);
