@@ -114,12 +114,34 @@ givens* initialize_vectors(int y) {
 	return vectors;
 }
 
-void display_summary(int i, run_summary summary) {
+void summarize_benchmarks(int y, run_summary* summaries) {
+	double c_avg = 0.0;
+	double asm_avg = 0.0;
+	float fastness;
+	long corrects = 0;
+
+	for (int i = 0; i < 30; i++) {
+		c_avg += summaries[i].c_time;
+		asm_avg += summaries[i].asm_time;
+		corrects += summaries[i].corrects;
+	}
+	c_avg /= 30;
+	asm_avg /= 30;
+	fastness = asm_avg / c_avg * 100.0;
+	
+	printf("Overall summary\n");
+	printf("C Avg time: %lf ms\n", c_avg);
+	printf("Asm Avg time: %lf ms\n", asm_avg);
+	printf("Asm is %f%% faster than C\n", fastness);
+	printf("Total Correctness: %d/%d\n", corrects, y * 30);
+}
+
+void display_summary(int i, int y, run_summary summary) {
 	printf("Run %d:\n", i + 1);
 	printf("C time: %lf ms\n", summary.c_time);
 	printf("Asm time: %lf ms\n", summary.asm_time);
 	printf("Time difference (C to Asm): %lf ms\n", summary.c_time - summary.asm_time);
-	printf("Corrects: %d\n", summary.corrects);
+	printf("Corrects: %d/%d\n", summary.corrects, y);
 	printf("\n");
 }
 
@@ -132,19 +154,21 @@ int main() {
 
 	// initialize inputs
 	givens* vectors = initialize_vectors(y);
+	run_summary* summaries = (run_summary*)malloc(30 * sizeof(run_summary));
 
 	for (int i = 0; i < 30; i++) {
-		run_summary summary;
 		if (i + 1 == 30) {
-			summary = verbose_run(y, vectors);
+			summaries[i] = verbose_run(y, vectors);
 		}
 		else {
-			summary = silent_run(y, vectors);
+			summaries[i] = silent_run(y, vectors);
 		}
-		display_summary(i, summary);
+		display_summary(i, y, summaries[i]);
 	}
+	summarize_benchmarks(y, summaries);
 
 	free(vectors);
+	free(summaries);
 
 	return 0;
 }
