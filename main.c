@@ -84,7 +84,6 @@ run_summary verbose_run(int y, givens* g) {
 		}
 	}
 
-	printf("Head of Run\n");
 	printf("%5s %5s %5s %5s %10s %10s %10s\n", "i", "vi", "vf", "t", "C_ans", "Asm_ans", "Check");
 	for (int i = 0; i < y; i++) {
 		printf("%5d %5.1f %5.1f %5.1f %10d %10d %10s\n",
