@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <stdbool.h>
+#include <windows.h>
 
 #include "c_acceleration.h"
 extern int asm_acceleration(double vi, double vf, double t);
@@ -12,96 +12,99 @@ struct givens {
 	double t;
 } typedef givens;
 
-struct iteration_res {
+struct iteration_result {
 	int c_ans;
-	double c_time;
-	
 	int asm_ans;
-	double asm_time;
-} typedef iteration_res;
+} typedef iteration_result;
 
 struct run_summary {
-	double c_avg;
-	double asm_avg;
+	double c_time;
+	double asm_time;
 	int corrects;
 } typedef run_summary;
 
-iteration_res solve_iteration(givens g) {
-	clock_t start, end;
-	iteration_res i;
-
-	start = clock();
-	i.asm_ans = asm_acceleration(g.vi, g.vf, g.t);
-	end = clock();
-	i.asm_time = ((double)(end - start) / CLOCKS_PER_SEC) * 1000000.0;
-
-	start = clock();
-	i.c_ans = c_acceleration(g.vi, g.vf, g.t);
-	end = clock();
-	i.c_time = ((double)(end - start) / CLOCKS_PER_SEC) * 1000000.0;
-
-	return i;
-}
-
-run_summary summarize_run(int y, iteration_res* results) {
-	run_summary r;
-	r.asm_avg = 0;
-	r.c_avg = 0;
-	r.corrects = 0;
-
-	for (int i = 0; i < y; i++) {
-		r.asm_avg += results[i].asm_time;
-		r.c_avg += results[i].c_time;
-		
-		if (results[i].asm_ans == results[i].c_ans) {
-			r.corrects++;
-		}
-	}
-
-	r.asm_avg /= y;
-	r.c_avg /= y;
-
-	return r;
-}
-
 run_summary silent_run(int y, givens* g) {
-	iteration_res* results = (iteration_res*)malloc(y * sizeof(iteration_res));
+	run_summary summary;
+	iteration_result* results = (iteration_result*)malloc(y * sizeof(iteration_result));
+	
+	// set timers
+	LARGE_INTEGER frequency, start, end;
+	QueryPerformanceFrequency(&frequency);
+	
+	// benchmark c time
+	QueryPerformanceCounter(&start);
+	for (int i = 0; i < y; i++) {
+		results[i].c_ans = c_acceleration(g[i].vi, g[i].vf, g[i].t);
+	}
+	QueryPerformanceCounter(&end);
+	summary.c_time = ((double)(end.QuadPart - start.QuadPart) * 1000.0) / frequency.QuadPart;
 
-	if (results) {
-		for (int i = 0; i < y; i++) {
-			results[i] = solve_iteration(g[i]);
+	// benchmark asm time
+	QueryPerformanceCounter(&start);
+	for (int i = 0; i < y; i++) {
+		results[i].asm_ans = asm_acceleration(g[i].vi, g[i].vf, g[i].t);
+	}
+	QueryPerformanceCounter(&end);
+	summary.asm_time = ((double)(end.QuadPart - start.QuadPart) * 1000.0) / frequency.QuadPart;
+
+	// count correctness
+	summary.corrects = 0;
+	for (int i = 0; i < y; i++) {
+		if (results[i].c_ans == results[i].asm_ans) {
+			summary.corrects++;
 		}
 	}
 
-	run_summary summary =  summarize_run(y, results);
 	free(results);
+
 	return summary;
 }
 
 run_summary verbose_run(int y, givens* g) {
-	iteration_res* results = (iteration_res*)malloc(y * sizeof(iteration_res));
+	run_summary summary;
+	iteration_result* results = (iteration_result*)malloc(y * sizeof(iteration_result));
 
-	printf("Head of Iteration (Max 10)\n");
-	printf("%5s %5s %5s %5s %10s %10s %10s %10s %10s\n", "i", "vi", "vf", "t", "C_ans", "C_time", "Asm_ans", "Asm_time", "Check");
+	// set timers
+	LARGE_INTEGER frequency, start, end;
+	QueryPerformanceFrequency(&frequency);
 
+	// benchmark c time
+	QueryPerformanceCounter(&start);
 	for (int i = 0; i < y; i++) {
-		results[i] = solve_iteration(g[i]);
+		results[i].c_ans = c_acceleration(g[i].vi, g[i].vf, g[i].t);
+	}
+	QueryPerformanceCounter(&end);
+	summary.c_time = ((double)(end.QuadPart - start.QuadPart) * 1000.0) / frequency.QuadPart;
 
-		if (i < 10) {
-			printf("%5d %5.1f %5.1f %5.1f %10d %10.2f %10d %10.2f %10s\n",
-				i + 1,
-				g[i].vi,
-				g[i].vf,
-				g[i].t,
-				results[i].c_ans,
-				results[i].c_time,
-				results[i].asm_ans,
-				results[i].asm_time,
-				(results[i].c_ans == results[i].asm_ans) ? "PASS" : "FAIL");
+	// benchmark asm time
+	QueryPerformanceCounter(&start);
+	for (int i = 0; i < y; i++) {
+		results[i].asm_ans = asm_acceleration(g[i].vi, g[i].vf, g[i].t);
+	}
+	QueryPerformanceCounter(&end);
+	summary.asm_time = ((double)(end.QuadPart - start.QuadPart) * 1000.0) / frequency.QuadPart;
+
+	// count correctness
+	summary.corrects = 0;
+	for (int i = 0; i < y; i++) {
+		if (results[i].c_ans == results[i].asm_ans) {
+			summary.corrects++;
 		}
 	}
 
-	run_summary summary = summarize_run(y, results);
+	// display inputs and outputs per iteration
+	printf("%5s %5s %5s %5s %10s %10s %10s\n", "i", "vi", "vf", "t", "C_ans", "Asm_ans", "Check");
+	for (int i = 0; i < y; i++) {
+		printf("%5d %5.1f %5.1f %5.1f %10d %10d %10s\n",
+			i + 1,
+			g[i].vi,
+			g[i].vf,
+			g[i].t,
+			results[i].c_ans,
+			results[i].asm_ans,
+			results[i].c_ans == results[i].asm_ans ? "PASS" : "FAIL");
+	}
+
 	free(results);
 	return summary;
 }
@@ -120,6 +123,37 @@ givens* initialize_vectors(int y) {
 	return vectors;
 }
 
+void summarize_benchmarks(int y, run_summary* summaries) {
+	double c_avg = 0.0;
+	double asm_avg = 0.0;
+	float fastness;
+	long corrects = 0;
+
+	for (int i = 0; i < 30; i++) {
+		c_avg += summaries[i].c_time;
+		asm_avg += summaries[i].asm_time;
+		corrects += summaries[i].corrects;
+	}
+	c_avg /= 30;
+	asm_avg /= 30;
+	fastness = asm_avg / c_avg * 100.0;
+	
+	printf("Overall summary\n");
+	printf("C Avg time: %lf ms\n", c_avg);
+	printf("Asm Avg time: %lf ms\n", asm_avg);
+	printf("Asm is %f%% faster than C\n", fastness);
+	printf("Total Correctness: %d/%d\n", corrects, y * 30);
+}
+
+void display_summary(int i, int y, run_summary summary) {
+	printf("Run %d:\n", i + 1);
+	printf("C time: %lf ms\n", summary.c_time);
+	printf("Asm time: %lf ms\n", summary.asm_time);
+	printf("Time difference (C to Asm): %lf ms\n", summary.c_time - summary.asm_time);
+	printf("Corrects: %d/%d\n", summary.corrects, y);
+	printf("\n");
+}
+
 int main() {
 	int y;
 	srand(time(NULL));
@@ -129,21 +163,21 @@ int main() {
 
 	// initialize inputs
 	givens* vectors = initialize_vectors(y);
-	run_summary* results = (run_summary*)malloc(30 * sizeof(run_summary));
+	run_summary* summaries = (run_summary*)malloc(30 * sizeof(run_summary));
 
 	for (int i = 0; i < 30; i++) {
-		printf("Run %d\n", i + 1);
-		if (i == 29) {
-			results[i] = verbose_run(y, vectors);
+		if (i + 1 == 30) {
+			summaries[i] = verbose_run(y, vectors);
 		}
 		else {
-			results[i] = silent_run(y, vectors);
-			printf("Asm_avg: %lf, C_avg: %lf, Corrects: %d\n", results[i].asm_avg, results[i].c_avg, results[i].corrects);
+			summaries[i] = silent_run(y, vectors);
 		}
+		display_summary(i, y, summaries[i]);
 	}
+	summarize_benchmarks(y, summaries);
 
 	free(vectors);
-	free(results);
+	free(summaries);
 
 	return 0;
 }
