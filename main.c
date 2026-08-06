@@ -27,9 +27,11 @@ run_summary silent_run(int y, givens* g) {
 	run_summary summary;
 	iteration_result* results = (iteration_result*)malloc(y * sizeof(iteration_result));
 	
+	// set timers
 	LARGE_INTEGER frequency, start, end;
 	QueryPerformanceFrequency(&frequency);
 	
+	// benchmark c time
 	QueryPerformanceCounter(&start);
 	for (int i = 0; i < y; i++) {
 		results[i].c_ans = c_acceleration(g[i].vi, g[i].vf, g[i].t);
@@ -37,6 +39,7 @@ run_summary silent_run(int y, givens* g) {
 	QueryPerformanceCounter(&end);
 	summary.c_time = ((double)(end.QuadPart - start.QuadPart) * 1000.0) / frequency.QuadPart;
 
+	// benchmark asm time
 	QueryPerformanceCounter(&start);
 	for (int i = 0; i < y; i++) {
 		results[i].asm_ans = asm_acceleration(g[i].vi, g[i].vf, g[i].t);
@@ -44,6 +47,7 @@ run_summary silent_run(int y, givens* g) {
 	QueryPerformanceCounter(&end);
 	summary.asm_time = ((double)(end.QuadPart - start.QuadPart) * 1000.0) / frequency.QuadPart;
 
+	// count correctness
 	summary.corrects = 0;
 	for (int i = 0; i < y; i++) {
 		if (results[i].c_ans == results[i].asm_ans) {
@@ -60,9 +64,11 @@ run_summary verbose_run(int y, givens* g) {
 	run_summary summary;
 	iteration_result* results = (iteration_result*)malloc(y * sizeof(iteration_result));
 
+	// set timers
 	LARGE_INTEGER frequency, start, end;
 	QueryPerformanceFrequency(&frequency);
 
+	// benchmark c time
 	QueryPerformanceCounter(&start);
 	for (int i = 0; i < y; i++) {
 		results[i].c_ans = c_acceleration(g[i].vi, g[i].vf, g[i].t);
@@ -70,6 +76,7 @@ run_summary verbose_run(int y, givens* g) {
 	QueryPerformanceCounter(&end);
 	summary.c_time = ((double)(end.QuadPart - start.QuadPart) * 1000.0) / frequency.QuadPart;
 
+	// benchmark asm time
 	QueryPerformanceCounter(&start);
 	for (int i = 0; i < y; i++) {
 		results[i].asm_ans = asm_acceleration(g[i].vi, g[i].vf, g[i].t);
@@ -77,6 +84,7 @@ run_summary verbose_run(int y, givens* g) {
 	QueryPerformanceCounter(&end);
 	summary.asm_time = ((double)(end.QuadPart - start.QuadPart) * 1000.0) / frequency.QuadPart;
 
+	// count correctness
 	summary.corrects = 0;
 	for (int i = 0; i < y; i++) {
 		if (results[i].c_ans == results[i].asm_ans) {
@@ -84,6 +92,7 @@ run_summary verbose_run(int y, givens* g) {
 		}
 	}
 
+	// display inputs and outputs per iteration
 	printf("%5s %5s %5s %5s %10s %10s %10s\n", "i", "vi", "vf", "t", "C_ans", "Asm_ans", "Check");
 	for (int i = 0; i < y; i++) {
 		printf("%5d %5.1f %5.1f %5.1f %10d %10d %10s\n",
