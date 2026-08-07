@@ -126,7 +126,7 @@ givens* initialize_vectors(int y) {
 void summarize_benchmarks(int y, run_summary* summaries) {
 	double c_avg = 0.0;
 	double asm_avg = 0.0;
-	float fastness;
+	float speedup;
 	long corrects = 0;
 
 	for (int i = 0; i < 30; i++) {
@@ -136,12 +136,12 @@ void summarize_benchmarks(int y, run_summary* summaries) {
 	}
 	c_avg /= 30;
 	asm_avg /= 30;
-	fastness = asm_avg / c_avg * 100.0;
+	speedup = c_avg / asm_avg;
 	
 	printf("Overall summary\n");
 	printf("C Avg time: %lf ms\n", c_avg);
 	printf("Asm Avg time: %lf ms\n", asm_avg);
-	printf("Asm is %f%% faster than C\n", fastness);
+	printf("Asm is %f times as fast as C\n", speedup);
 	printf("Total Correctness: %d/%d\n", corrects, y * 30);
 }
 
