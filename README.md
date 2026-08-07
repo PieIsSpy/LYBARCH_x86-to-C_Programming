@@ -26,6 +26,8 @@ Implement a program that computes the acceleration of multiple cars stored in a 
 ```
 # Technical Report: x86-64 Assembly vs. C Implementation & Execution Performance Analysis
 
+### [YouTube Video Demonstration](https://youtu.be/nCtvC0w5lMY)
+
 ## 1. Project Specifications & Requirements
 The goal of this implementation is to compute the acceleration of $Y$ vehicles stored in a $Y \times 3$ double-precision floating-point matrix and analyze performance differences between a baseline C implementation and an x86-64 Assembly subroutine.
 
@@ -152,28 +154,28 @@ asm_acceleration:
 
 #### 1. Small Input Size (`Y = 10`)
 ![Y=10 Execution Screenshot](images/y10.png)
-* *Verification at Y = 10:* Validates individual row computations (`C_ans` vs `Asm_ans`), displaying a **300/300 (100%)** total correctness score and an initial **28.09%** speedup.
+* *Verification at Y = 10:* Validates individual row computations (`C_ans` vs `Asm_ans`), displaying a **300/300 (100%)** total correctness score and an initial **5.21x** speedup.
 
 #### 2. Medium Input Size (`Y = 100`)
 ![Y=100 Execution Screenshot](images/y100.png)
-* *Verification at Y = 100:* Maintains 100% output accuracy while assembly performance scales up to **93.26% faster than C**.
+* *Verification at Y = 100:* Maintains 100% output accuracy while assembly performance scales up to **2.68 times as fast as C**.
 
 #### 3. Large Input Size (`Y = 1,000`)
 ![Y=1000 Execution Screenshot](images/y1000.png)
-* *Verification at Y = 1,000:* Represents the peak efficiency threshold where Assembly outperforms C by **41.87%** (`0.0115 ms` vs `0.0238 ms`).
+* *Verification at Y = 1,000:* Represents the peak efficiency threshold where Assembly outperforms C by **2.36x speed factor** (`0.0125 ms` vs `0.0296 ms`).
 
 #### 4. Stress Test / Maximum Input Size (`Y = 10,000`)
 ![Y=10000 Execution Screenshot](images/y10000.png)
-* *Verification at Y = 10,000:* Demonstrates sustained accuracy across **300,000 total computations** (`300000 / 300000`), with Assembly completing in `0.1109 ms` compared to C's `0.2620 ms`.
+* *Verification at Y = 10,000:* Demonstrates sustained accuracy across **300,000 total computations** (`300000 / 300000`), with Assembly completing in `0.1071 ms` compared to C's `0.2422 ms`.
 
 ### Performance Table Summary
 
-| Input Size ($Y$) | Avg C Time ($\text{ms}$) | Avg ASM Time ($\text{ms}$) | Assembly Fastness Improvement | Correctness Score |
+| Input Size ($Y$) | Avg C Time ($\text{ms}$) | Avg ASM Time ($\text{ms}$) | Speed Factor | Correctness Score |
 | :--- | :--- | :--- | :--- | :--- |
-| **$10$** | `0.001103 ms` | `0.000310 ms` | **28.096676% faster than C** | `300 / 300` ($100\%$) |
-| **$100$** | `0.002920 ms` | `0.002723 ms` | **93.264839% faster than C** | `3000 / 3000` ($100\%$) |
-| **$1,000$** | `0.024660 ms` | `0.010327 ms` | **41.876183% faster than C** | `30000 / 30000` ($100\%$) |
-| **$10,000$** | `0.262017 ms` | `0.110963 ms` | **42.349724% faster than C** | `300000 / 300000` ($100\%$) |
+| **$10$** | `0.000990 ms` | `0.000190 ms` | **5.21 times as fast as C** | `300 / 300` ($100\%$) |
+| **$100$** | `0.003710 ms` | `0.001380 ms` | **2.68 times as fast as C** | `3000 / 3000` ($100\%$) |
+| **$1,000$** | `0.029647 ms` | `0.012537 ms` | **2.36 times as fast as C** | `30000 / 30000` ($100\%$) |
+| **$10,000$** | `0.242293 ms` | `0.107130 ms` | **2.26 times as fast as C** | `300000 / 300000` ($100\%$) |
 
 ## 6. Findings & Conclusion
 
