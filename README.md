@@ -1,7 +1,7 @@
 # LYBARCH_x86-to-C_Programming
 ## Members:
 - Ramuel Sean Cordero
-- Karl Deajay Omandac
+- Karl Deejay Omandac
 
 ## Task:
 Implement a program that computes the acceleration of multiple cars stored in a `Y x 3` matrix, where `Y` is the number of cars. All inputs are double floating-point values. The output acceleration for each car will be converted into integers.
@@ -148,14 +148,32 @@ asm_acceleration:
 
 ## 5. Comprehensive Benchmark Results
 
+### Execution & Correctness
+
+#### 1. Small Input Size (`Y = 10`)
+![Y=10 Execution Screenshot](images/y10.png)
+* *Verification at Y = 10:* Validates individual row computations (`C_ans` vs `Asm_ans`), displaying a **300/300 (100%)** total correctness score and an initial **28.09%** speedup.
+
+#### 2. Medium Input Size (`Y = 100`)
+![Y=100 Execution Screenshot](images/y100.png)
+* *Verification at Y = 100:* Maintains 100% output accuracy while assembly performance scales up to **93.26% faster than C**.
+
+#### 3. Large Input Size (`Y = 1,000`)
+![Y=1000 Execution Screenshot](images/y1000.png)
+* *Verification at Y = 1,000:* Represents the peak efficiency threshold where Assembly outperforms C by **41.87%** (`0.0115 ms` vs `0.0238 ms`).
+
+#### 4. Stress Test / Maximum Input Size (`Y = 10,000`)
+![Y=10000 Execution Screenshot](images/y10000.png)
+* *Verification at Y = 10,000:* Demonstrates sustained accuracy across **300,000 total computations** (`300000 / 300000`), with Assembly completing in `0.1109 ms` compared to C's `0.2620 ms`.
+
 ### Performance Table Summary
 
-| Input Size ($Y$) | Avg C Time ($\text{ms}$) | Avg ASM Time ($\text{ms}$) | Time Delta ($\text{ms}$) | Assembly Fastness Improvement | Correctness Score |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **$10$** | `0.001103 ms` | `0.000310 ms` | `0.000500 ms` | **28.0966704% faster than C** | `300 / 300` ($100\%$) |
-| **$100$** | `0.002920 ms` | `0.000723 ms` | `0.001300 ms` | **93.264839% faster than C** | `3000 / 3000` ($100\%$) |
-| **$1,000$** | `0.023790 ms` | `0.011500 ms` | `0.012200 ms` | **106.870229% faster than C** | `30000 / 30000` ($100\%$) |
-| **$10,000$** | `0.262017 ms` | `0.056617 ms` | `0.205300 ms` | **42.349724% faster than C** | `300000 / 300000` ($100\%$) |
+| Input Size ($Y$) | Avg C Time ($\text{ms}$) | Avg ASM Time ($\text{ms}$) | Assembly Fastness Improvement | Correctness Score |
+| :--- | :--- | :--- | :--- | :--- |
+| **$10$** | `0.001103 ms` | `0.000310 ms` | **28.096676% faster than C** | `300 / 300` ($100\%$) |
+| **$100$** | `0.002920 ms` | `0.002723 ms` | **93.264839% faster than C** | `3000 / 3000` ($100\%$) |
+| **$1,000$** | `0.024660 ms` | `0.010327 ms` | **41.876183% faster than C** | `30000 / 30000` ($100\%$) |
+| **$10,000$** | `0.262017 ms` | `0.110963 ms` | **42.349724% faster than C** | `300000 / 300000` ($100\%$) |
 
 ## 6. Findings & Conclusion
 
