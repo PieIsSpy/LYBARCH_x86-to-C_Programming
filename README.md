@@ -73,20 +73,6 @@ int c_acceleration(double vi, double vf, double t) {
     vf = vf * 1000.0 / 3600.0;
     return round((vf - vi) / t);
 }
-
-## 3. Subroutine Implementations
-
-### C Kernel Implementation (`c_acceleration`)
-Functions as the reference implementation for sanity checks and correctness validation.
-
-```c
-#include <math.h>
-
-int c_acceleration(double vi, double vf, double t) {
-    vi = vi * 1000.0 / 3600.0;
-    vf = vf * 1000.0 / 3600.0;
-    return round((vf - vi) / t);
-}
 ```
 
 ### x86-64 Assembly Implementation (`asm_acceleration`)
@@ -145,7 +131,7 @@ asm_acceleration:
 5. **Summary Metrics Calculation:**
    * **C Average Time:** `C_avg = (Sum of C_time) / 30`
    * **Assembly Average Time:** `ASM_avg = (Sum of ASM_time) / 30`
-   * **Fastness Percentage:** `Fastness (%) = ((C_avg - ASM_avg) / C_avg) * 100`
+   * **Speed up Factor:** `Speedup = C_avg / ASM_avg`
 ---
 
 ## 5. Comprehensive Benchmark Results
@@ -154,11 +140,11 @@ asm_acceleration:
 
 #### 1. Small Input Size (`Y = 10`)
 ![Y=10 Execution Screenshot](images/y10.png)
-* *Verification at Y = 10:* Validates individual row computations (`C_ans` vs `Asm_ans`), displaying a **300/300 (100%)** total correctness score and an initial **5.21x** speedup.
+* *Verification at Y = 10:* Validates individual row computations (`C_ans` vs `Asm_ans`), displaying a **300/300 (100%)** total correctness score and an initial **5.21x** speed factor.
 
 #### 2. Medium Input Size (`Y = 100`)
 ![Y=100 Execution Screenshot](images/y100.png)
-* *Verification at Y = 100:* Maintains 100% output accuracy while assembly performance scales up to **2.68 times as fast as C**.
+* *Verification at Y = 100:* Maintains 100% output accuracy while assembly performance scales up to **2.68x as fast as C**.
 
 #### 3. Large Input Size (`Y = 1,000`)
 ![Y=1000 Execution Screenshot](images/y1000.png)
