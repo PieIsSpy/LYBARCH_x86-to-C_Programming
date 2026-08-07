@@ -168,5 +168,5 @@ asm_acceleration:
 * **Output Correctness:** 100% accuracy was maintained across all test configurations (a total of 333,300 benchmark calculations). The assembly scalar SIMD instruction `cvtsd2si` perfectly matched standard C library double-to-integer conversion and rounding semantics (`round()`).
 * **Execution Efficiency:** Across all input sizes ($Y = 10, 100, 1000, 10000$), the x86-64 Assembly implementation consistently outperformed the standard C implementation. 
 * **Performance Trends:**
-  * Performance gains scaled significantly as matrix size increased, reaching a peak speedup of **106.87% faster than C** at $Y = 1,000$.
+  * Relative speedup inversely correlated with input size, peaking at **5.21 times faster than C** at $Y = 10$ and stabilizing around **2.26 times faster than C** for larger datasets.
   * The performance advantage of assembly stems directly from bypassing function call overhead, avoiding extra stack frame allocations, and executing inline scalar SSE instructions (`mulsd`, `divsd`, `subsd`, `cvtsd2si`) directly within hardware registers.
